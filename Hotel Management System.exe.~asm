@@ -1,0 +1,515 @@
+.MODEL SMALL
+.STACK 100H
+
+.DATA
+
+msg1 DB 13,10,'******** HOTEL MANAGEMENT SYSTEM ********$'
+
+menu DB 13,10,'1. Rooms'
+DB 13,10,'2. Pasta'
+DB 13,10,'3. Burger'
+DB 13,10,'4. Noodles'
+DB 13,10,'5. Shake'
+DB 13,10,'6. Chicken Roll'
+DB 13,10,'7. Sales Information'
+DB 13,10,'8. Exit'
+DB 13,10,'Enter Choice: $'
+
+roommsg DB 13,10,'Rooms Selected$'
+pastamsg DB 13,10,'Pasta Selected$'
+burgermsg DB 13,10,'Burger Selected$'
+noodlemsg DB 13,10,'Noodles Selected$'
+shakemsg DB 13,10,'Shake Selected$'
+rollmsg DB 13,10,'Chicken Roll Selected$'
+
+askqty DB 13,10,'Enter Quantity (1-9): $'
+
+invalid DB 13,10,'Invalid Choice!$'
+exitmsg DB 13,10,'Program Ended.$'
+
+salesmsg DB 13,10,'======== SALES REPORT ========$'
+
+roomtxt DB 13,10,'Rooms Sold: $'
+pastatxt DB 13,10,'Pasta Sold: $'
+burgertxt DB 13,10,'Burger Sold: $'
+noodletxt DB 13,10,'Noodles Sold: $'
+shaketxt DB 13,10,'Shake Sold: $'
+rolltxt DB 13,10,'Roll Sold: $'
+billtxt DB 13,10,'Total Bill: $'
+
+qty DB ?
+
+roomCount DW 0
+pastaCount DW 0
+burgerCount DW 0
+noodleCount DW 0
+shakeCount DW 0
+rollCount DW 0
+
+totalBill DW 0
+
+.CODE
+
+MAIN PROC
+
+MOV AX,@DATA
+MOV DS,AX
+
+START:
+
+; print title
+LEA DX,msg1
+MOV AH,09H
+INT 21H
+
+; print menu
+LEA DX,menu
+MOV AH,09H
+INT 21H
+
+; take choice
+MOV AH,01H
+INT 21H
+
+CMP AL,'1'
+JE ROOM
+CMP AL,'2'
+JE PASTA
+CMP AL,'3'
+JE BURGER
+CMP AL,'4'
+JE NOODLE
+CMP AL,'5'
+JE SHAKE
+CMP AL,'6'
+JE ROLL
+CMP AL,'7'
+JE SALES
+CMP AL,'8'
+JE EXIT_PROGRAM
+
+; invalid
+LEA DX,invalid
+MOV AH,09H
+INT 21H
+JMP START
+
+;================ ROOM =================
+ROOM:
+
+LEA DX,roommsg
+MOV AH,09H
+INT 21H
+
+; ---- GET QTY (inline) ----
+LEA DX,askqty
+MOV AH,09H
+INT 21H
+
+MOV AH,01H
+INT 21H
+SUB AL,'0'
+MOV qty,AL
+
+MOV AL,qty
+CBW
+ADD roomCount,AX
+
+MOV BX,500
+MUL BX
+ADD totalBill,AX
+
+JMP START
+
+;================ PASTA =================
+PASTA:
+
+LEA DX,pastamsg
+MOV AH,09H
+INT 21H
+
+LEA DX,askqty
+MOV AH,09H
+INT 21H
+
+MOV AH,01H
+INT 21H
+SUB AL,'0'
+MOV qty,AL
+
+MOV AL,qty
+CBW
+ADD pastaCount,AX
+
+MOV BX,300
+MUL BX
+ADD totalBill,AX
+
+JMP START
+
+;================ BURGER =================
+BURGER:
+
+LEA DX,burgermsg
+MOV AH,09H
+INT 21H
+
+LEA DX,askqty
+MOV AH,09H
+INT 21H
+
+MOV AH,01H
+INT 21H
+SUB AL,'0'
+MOV qty,AL
+
+MOV AL,qty
+CBW
+ADD burgerCount,AX
+
+MOV BX,250
+MUL BX
+ADD totalBill,AX
+
+JMP START
+
+;================ NOODLE =================
+NOODLE:
+
+LEA DX,noodlemsg
+MOV AH,09H
+INT 21H
+
+LEA DX,askqty
+MOV AH,09H
+INT 21H
+
+MOV AH,01H
+INT 21H
+SUB AL,'0'
+MOV qty,AL
+
+MOV AL,qty
+CBW
+ADD noodleCount,AX
+
+MOV BX,200
+MUL BX
+ADD totalBill,AX
+
+JMP START
+
+;================ SHAKE =================
+SHAKE:
+
+LEA DX,shakemsg
+MOV AH,09H
+INT 21H
+
+LEA DX,askqty
+MOV AH,09H
+INT 21H
+
+MOV AH,01H
+INT 21H
+SUB AL,'0'
+MOV qty,AL
+
+MOV AL,qty
+CBW
+ADD shakeCount,AX
+
+MOV BX,150
+MUL BX
+ADD totalBill,AX
+
+JMP START
+
+;================ ROLL =================
+ROLL:
+
+LEA DX,rollmsg
+MOV AH,09H
+INT 21H
+
+LEA DX,askqty
+MOV AH,09H
+INT 21H
+
+MOV AH,01H
+INT 21H
+SUB AL,'0'
+MOV qty,AL
+
+MOV AL,qty
+CBW
+ADD rollCount,AX
+
+MOV BX,180
+MUL BX
+ADD totalBill,AX
+
+JMP START
+
+;================ SALES =================
+SALES:
+
+LEA DX,salesmsg
+MOV AH,09H
+INT 21H
+
+; ROOM COUNT
+LEA DX,roomtxt
+MOV AH,09H
+INT 21H
+MOV AX,roomCount
+
+CALL_PRINT_ROOM:
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+
+MOV BX,10
+XOR CX,CX
+
+L1:
+XOR DX,DX
+DIV BX
+PUSH DX
+INC CX
+CMP AX,0
+JNE L1
+
+L2:
+POP DX
+ADD DL,'0'
+MOV AH,02H
+INT 21H
+LOOP L2
+
+POP DX
+POP CX
+POP BX
+POP AX
+
+; PASTA
+LEA DX,pastatxt
+MOV AH,09H
+INT 21H
+MOV AX,pastaCount
+
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+
+MOV BX,10
+XOR CX,CX
+
+L3:
+XOR DX,DX
+DIV BX
+PUSH DX
+INC CX
+CMP AX,0
+JNE L3
+
+L4:
+POP DX
+ADD DL,'0'
+MOV AH,02H
+INT 21H
+LOOP L4
+
+POP DX
+POP CX
+POP BX
+POP AX
+
+; BURGER
+LEA DX,burgertxt
+MOV AH,09H
+INT 21H
+MOV AX,burgerCount
+
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+
+MOV BX,10
+XOR CX,CX
+
+L5:
+XOR DX,DX
+DIV BX
+PUSH DX
+INC CX
+CMP AX,0
+JNE L5
+
+L6:
+POP DX
+ADD DL,'0'
+MOV AH,02H
+INT 21H
+LOOP L6
+
+POP DX
+POP CX
+POP BX
+POP AX
+
+; NOODLE
+LEA DX,noodletxt
+MOV AH,09H
+INT 21H
+MOV AX,noodleCount
+
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+
+MOV BX,10
+XOR CX,CX
+
+L7:
+XOR DX,DX
+DIV BX
+PUSH DX
+INC CX
+CMP AX,0
+JNE L7
+
+L8:
+POP DX
+ADD DL,'0'
+MOV AH,02H
+INT 21H
+LOOP L8
+
+POP DX
+POP CX
+POP BX
+POP AX
+
+; SHAKE
+LEA DX,shaketxt
+MOV AH,09H
+INT 21H
+MOV AX,shakeCount
+
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+
+MOV BX,10
+XOR CX,CX
+
+L9:
+XOR DX,DX
+DIV BX
+PUSH DX
+INC CX
+CMP AX,0
+JNE L9
+
+L10:
+POP DX
+ADD DL,'0'
+MOV AH,02H
+INT 21H
+LOOP L10
+
+POP DX
+POP CX
+POP BX
+POP AX
+
+; ROLL
+LEA DX,rolltxt
+MOV AH,09H
+INT 21H
+MOV AX,rollCount
+
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+
+MOV BX,10
+XOR CX,CX
+
+L11:
+XOR DX,DX
+DIV BX
+PUSH DX
+INC CX
+CMP AX,0
+JNE L11
+
+L12:
+POP DX
+ADD DL,'0'
+MOV AH,02H
+INT 21H
+LOOP L12
+
+POP DX
+POP CX
+POP BX
+POP AX
+
+; TOTAL BILL
+LEA DX,billtxt
+MOV AH,09H
+INT 21H
+MOV AX,totalBill
+
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+
+MOV BX,10
+XOR CX,CX
+
+L13:
+XOR DX,DX
+DIV BX
+PUSH DX
+INC CX
+CMP AX,0
+JNE L13
+
+L14:
+POP DX
+ADD DL,'0'
+MOV AH,02H
+INT 21H
+LOOP L14
+
+POP DX
+POP CX
+POP BX
+POP AX
+
+JMP START
+
+;================ EXIT =================
+EXIT_PROGRAM:
+
+LEA DX,exitmsg
+MOV AH,09H
+INT 21H
+
+MOV AH,4CH
+INT 21H
+
+MAIN ENDP
+END MAIN
+
+
