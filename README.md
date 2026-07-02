@@ -20,6 +20,6 @@ A menu-driven system written in **Assembly Language (x86)** designed to run on t
 
 ## 🚀 How to Run
 1. Download and install **EMU8086 Emulator**.
-2. Create a new file and paste the code from `hotel.asm` into the emulator editor.
+2. Create a new file and paste the code from `Hotel Management System.asm` into the emulator editor.
 3. Click on the **Emulate** button at the top.
 4. Click **Run** to execute the program in the terminal screen.
